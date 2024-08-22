@@ -8,25 +8,29 @@
     private static readonly int HeightUpperLimit = 198;
     private static readonly double PregnancyIntervalLowerLimit = 0.25;
     private static readonly double PregnancyIntervalUpperLimit = 15;
-    private static readonly int PrevGestAgeLowerLimit = 24;
-    private static readonly int PrevGestAgeUpperLimit = 42;
+    private static readonly double PrevGestAgeLowerLimit = 24;
+    private static readonly double PrevGestAgeUpperLimit = 42;
 
     private int age;
     public int Age
     {
         get => age;
-        set  
+        set
         {
-            value = value > 35 ? value - 35 : 0;
-            age = Math.Max(AgeLowerLimit, Math.Min(value, AgeUpperLimit));
+            value = Math.Max(AgeLowerLimit, Math.Min(value, AgeUpperLimit));
+            age = value > 35 ? value - 35 : 0;
+
         }
     }
-
+    public bool ChronicHypert { get; set; }
     private int weight;
     public int Weight
     {
         get => weight;
-        set => weight = value;
+        set
+        {
+            weight = ChronicHypert ? value : 0;
+        }
     }
 
     private double height;
@@ -35,15 +39,15 @@
         get => height;
         set
         {
-            value = value - 164;
-            height = Math.Max(HeightLowerLimit, Math.Min(value, HeightUpperLimit));
+            value = Math.Max(HeightLowerLimit, Math.Min(value, HeightUpperLimit));
+            height = value - 164;
         }
     }
 
     public required String Ethnicity { get; set; }
     public bool FamilyHistoryPE { get; set; }
     public bool IVF { get; set; }
-    public bool ChronicHypert { get; set; }
+
     public bool Diabetes { get; set; }
     public bool Autoimmune { get; set; }
 
