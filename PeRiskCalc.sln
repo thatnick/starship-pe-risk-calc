@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starship_fmf_calc_csharp", "starship_fmf_calc_csharp\starship_fmf_calc_csharp.csproj", "{B0236645-E3DE-4A83-8052-04E6D4B474D2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PeRiskCalc.Api", "PeRiskCalc.Api\PeRiskCalc.Api.csproj", "{B0236645-E3DE-4A83-8052-04E6D4B474D2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PeRiskCalc.Frontend", "PeRiskCalc.Frontend\PeRiskCalc.Frontend.csproj", "{A9003852-09A2-423B-924B-209F3FD2893A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{B0236645-E3DE-4A83-8052-04E6D4B474D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0236645-E3DE-4A83-8052-04E6D4B474D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0236645-E3DE-4A83-8052-04E6D4B474D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9003852-09A2-423B-924B-209F3FD2893A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9003852-09A2-423B-924B-209F3FD2893A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9003852-09A2-423B-924B-209F3FD2893A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9003852-09A2-423B-924B-209F3FD2893A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
