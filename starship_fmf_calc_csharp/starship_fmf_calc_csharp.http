@@ -1,0 +1,6 @@
+@starship_fmf_calc_csharp_HostAddress = http://localhost:5128
+
+GET {{starship_fmf_calc_csharp_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
