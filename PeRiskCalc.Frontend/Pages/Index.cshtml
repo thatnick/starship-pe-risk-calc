@@ -10,10 +10,13 @@
 
             const plgfRadio = document.getElementById('serum-measure-plgf');
             const pappARadio = document.getElementById('serum-measure-papp-a');
+            const notAvailableRadio = document.getElementById('serum-measure-none');
             const parousNoRadio = document.getElementById('parous-no');
             const parousYesRadio = document.getElementById('parous-yes');
             const plgfFieldset = document.getElementById('plgf-fieldset');
             const pappAFieldset = document.getElementById('papp-a-fieldset');
+            const plgfInput = document.getElementById('plgf-measure');
+            const pappAInput = document.getElementById('papp-a-measure');
             const parousCard = document.getElementById('parous-collapse');
             const parousPeYesRadio = document.getElementById('parous-pe-yes');
             const parousPeNoRadio = document.getElementById('parous-pe-no');
@@ -54,14 +57,25 @@
 
             // Function to handle radio button change
             function handleSerumRadioChange() {
-                if (plgfRadio.checked) {
+                if (notAvailableRadio.checked) {
+                    // Hide both fieldsets
+                    plgfCollapse.hide();
+                    pappACollapse.hide();
+                    plgfInput.disabled = true;
+                    pappAInput.disabled = true;
+                    console.log("Disabling inputs");
+                } else if (plgfRadio.checked) {
                     // Show PlGF fieldset and hide PAPP-A fieldset
                     plgfCollapse.show();
                     pappACollapse.hide();
+                    plgfInput.disabled = false;
+                    pappAInput.disabled = true;
                 } else if (pappARadio.checked) {
                     // Show PAPP-A fieldset and hide PlGF fieldset
                     pappACollapse.show();
                     plgfCollapse.hide();
+                    plgfInput.disabled = true;
+                    pappAInput.disabled = false;
                 }
             }
             function handleParousRadioChange() {
@@ -69,18 +83,29 @@
                     // Show the card
                     parousCollapse.show();
                     parousGestAgeWeeksInput.required = true;
+                    parousGestAgeWeeksInput.disabled = false;
                     parousGestAgeDaysInput.required = true;
+                    parousGestAgeDaysInput.disabled = false;
                     parousPregIntervalInput.required = true;
+                    parousPregIntervalInput.disabled = false;
                     parousPeNoRadio.required = true;
+                    parousPeNoRadio.disabled = false;
                     parousPeYesRadio.required = true;
+                    parousPeYesRadio.disabled = false;
+
                 } else {
                     // Hide the card
                     parousCollapse.hide();
                     parousGestAgeWeeksInput.required = false;
+                    parousGestAgeWeeksInput.disabled = true;
                     parousGestAgeDaysInput.required = false;
+                    parousGestAgeDaysInput.disabled = true;
                     parousPregIntervalInput.required = false;
+                    parousPregIntervalInput.disabled = true;
                     parousPeNoRadio.required = false;
+                    parousPeNoRadio.disabled = true;
                     parousPeYesRadio.required = false;
+                    parousPeYesRadio.disabled = true;
                 }
             }
 
@@ -115,6 +140,7 @@
             // Add event listeners to both radio buttons
             plgfRadio.addEventListener('change', handleSerumRadioChange);
             pappARadio.addEventListener('change', handleSerumRadioChange);
+            notAvailableRadio.addEventListener('change', handleSerumRadioChange);
             parousNoRadio.addEventListener('change', handleParousRadioChange);
             parousYesRadio.addEventListener('change', handleParousRadioChange);
 
@@ -125,9 +151,10 @@
             // Loop over them and prevent submission
             Array.from(forms).forEach(form => {
                 form.addEventListener('submit', async event => {
+                    event.preventDefault()
+                    event.stopPropagation()
                     if (!form.checkValidity()) {
-                        event.preventDefault()
-                        event.stopPropagation()
+
                         invalidPopover.show();
                         preventScrollOnValidation();
 
@@ -155,27 +182,22 @@
                 document.getElementById("calculator-form")
             );
 
-            const pregnancy = {
+            const priorInputs = {
                 Fetuses: formData.get("fetuses"),
                 GestAgeWeeks: parseFloat(formData.get("gest-age-weeks")),
                 GestAgeDays: parseFloat(formData.get("gest-age-days")),
                 IVF: formData.get("conception") === "ivf",
-            };
 
-            const characteristics = {
                 Age: parseFloat(formData.get("age")),
                 Height: parseFloat(formData.get("height")),
                 Weight: parseFloat(formData.get("weight")),
                 Ethnicity: formData.get("ethnicity"),
                 MotherPe: formData.get("mother-pe") === "yes",
-            };
 
-            const medHistory = {
                 ChronicHypert: formData.get("chronic-hypert") === "yes",
                 Diabetes: formData.get("diabetes") === "yes",
                 SleOrAps: formData.get("sle-aps") === "yes",
-            }
-            const obsHistory = {
+
                 Parous: formData.get("parous") === "yes",
                 ParousPe: formData.get("parous-pe-yes") === "yes",
                 ParousGestAgeWeeks: parseFloat(formData.get("parous-gest-age-weeks")),
@@ -183,11 +205,11 @@
                 ParousPregInterval: parseFloat(formData.get("parous-preg-interval")),
             };
 
-            const measurements = {
-                MapMoM: parseFloat(formData.get("map")),
-                UtaPiMoM: parseFloat(formData.get("uta-pi")),
-                PlgfMoM: parseFloat(formData.get("plgf")),
-                PappAMoM: parseFloat(formData.get("papp-a")),
+            const posteriorInputs = {
+                MapMoM: parseFloat(formData.get("map")) || 0,
+                UtaPiMoM: parseFloat(formData.get("uta-pi")) || 0,
+                PlgfMoM: parseFloat(formData.get("plgf-measure")) || 0,
+                PappAMoM: parseFloat(formData.get("papp-a-measure")) || 0,
             };
 
             try {
@@ -195,9 +217,9 @@
                 const response = await fetch("http://localhost:5128/calculate-risk", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ pregnancy, characteristics, medHistory, obsHistory, measurements }),
+                    body: JSON.stringify({ priorInputs, posteriorInputs }),
                 });
-                console.log("body", { body: response.body });
+                console.log("body", { priorInputs, posteriorInputs });
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -509,7 +531,7 @@
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="serum-measure" id="serum-measure-none"
                             value="none" checked>
-                        <label class="form-check-label" for="serum-measure-papp-a">Not available</label>
+                        <label class="form-check-label" for="serum-measure-none">Not available</label>
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="serum-measure" id="serum-measure-plgf"
@@ -524,7 +546,7 @@
 
                 </div>
             </div>
-            <fieldset class="row mb-3 collapse show " id="plgf-fieldset">
+            <fieldset class="row mb-3 collapse" id="plgf-fieldset">
                 <label for="plgf-measure" class="col-sm-3 col-form-label">Serum PlGF</label>
                 <div class="col-sm-3">
                     <div class="input-group">
