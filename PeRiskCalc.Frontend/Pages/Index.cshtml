@@ -3,42 +3,191 @@
 @{
     ViewData["Title"] = "Calculator";
 }
-
 @section scripts {
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+
+            const plgfRadio = document.getElementById('serum-measure-plgf');
+            const pappARadio = document.getElementById('serum-measure-papp-a');
+            const parousNoRadio = document.getElementById('parous-no');
+            const parousYesRadio = document.getElementById('parous-yes');
+            const plgfFieldset = document.getElementById('plgf-fieldset');
+            const pappAFieldset = document.getElementById('papp-a-fieldset');
+            const parousCard = document.getElementById('parous-collapse');
+            const parousPeYesRadio = document.getElementById('parous-pe-yes');
+            const parousPeNoRadio = document.getElementById('parous-pe-no');
+            const parousGestAgeWeeksInput = document.getElementById('parous-gest-age-weeks');
+            const parousGestAgeDaysInput = document.getElementById('parous-gest-age-days');
+            const parousPregIntervalInput = document.getElementById('parous-preg-interval');
+            const submitButton = document.getElementById('submit-button');
+
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            const forms = document.querySelectorAll('.needs-validation');
+            const alertBox = document.getElementById('validationAlert');
+
+            const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+            const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
+            const invalidPopover = new bootstrap.Popover(submitButton, {
+                trigger: 'manual'
+            }
+            );
+
+            // Initialize Bootstrap collapse elements
+            const plgfCollapse = new bootstrap.Collapse(plgfFieldset, {
+                toggle: false  // Prevents automatic toggle on load
+            });
+            const pappACollapse = new bootstrap.Collapse(pappAFieldset, {
+                toggle: false
+            });
+            const parousCollapse = new bootstrap.Collapse(parousCard, {
+                toggle: false
+            });
+
+            // Prevent scrolling up when form is invalid
+            function preventScrollOnValidation() {
+                document.querySelector('html').scrollTo({
+                    top: window.scrollY,
+                    behavior: 'smooth' // Ensures a smoother UX
+                });
+            }
+
+            // Function to handle radio button change
+            function handleSerumRadioChange() {
+                if (plgfRadio.checked) {
+                    // Show PlGF fieldset and hide PAPP-A fieldset
+                    plgfCollapse.show();
+                    pappACollapse.hide();
+                } else if (pappARadio.checked) {
+                    // Show PAPP-A fieldset and hide PlGF fieldset
+                    pappACollapse.show();
+                    plgfCollapse.hide();
+                }
+            }
+            function handleParousRadioChange() {
+                if (parousYesRadio.checked) {
+                    // Show the card
+                    parousCollapse.show();
+                    parousGestAgeWeeksInput.required = true;
+                    parousGestAgeDaysInput.required = true;
+                    parousPregIntervalInput.required = true;
+                    parousPeNoRadio.required = true;
+                    parousPeYesRadio.required = true;
+                } else {
+                    // Hide the card
+                    parousCollapse.hide();
+                    parousGestAgeWeeksInput.required = false;
+                    parousGestAgeDaysInput.required = false;
+                    parousPregIntervalInput.required = false;
+                    parousPeNoRadio.required = false;
+                    parousPeYesRadio.required = false;
+                }
+            }
+
+            function handleBaselineRiskClick() {
+                event.preventDefault();
+
+                // Auto-fill the form fields with baseline risk values
+
+                document.getElementById('fetuses').value = 'singleton';
+                document.getElementById('age').value = 25;
+                document.getElementById('height').value = 164;
+                document.getElementById('weight').value = 69;
+                document.getElementById('ethnicity').value = 'other';
+                document.querySelector('input[name="mother-pe"][value="no"]').checked = true;
+                document.querySelector('input[name="ivf"][value="no"]').checked = true;
+                document.querySelector('input[name="chronic-hypert"][value="no"]').checked = true;
+                document.querySelector('input[name="diabetes"][value="no"]').checked = true;
+                document.querySelector('input[name="sle-aps"][value="no"]').checked = true;
+                document.querySelector('input[name="parous"][value="no"]').checked = true;
+
+                // Biomeasurements
+                document.getElementById('map').value = 70;
+                document.getElementById('uta-pi').value = 1.5;
+                document.getElementById('plgf-measure').value = 1;
+
+                // Gestation details
+                document.getElementById('gest-age-weeks').value = 12;
+                document.getElementById('gest-age-days').value = 0;
+                handleParousRadioChange();
+            }
+
+            // Add event listeners to both radio buttons
+            plgfRadio.addEventListener('change', handleSerumRadioChange);
+            pappARadio.addEventListener('change', handleSerumRadioChange);
+            parousNoRadio.addEventListener('change', handleParousRadioChange);
+            parousYesRadio.addEventListener('change', handleParousRadioChange);
+
+            // Initialize the correct visibility on page load
+            handleSerumRadioChange();
+            handleParousRadioChange();
+
+            // Loop over them and prevent submission
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', async event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                        invalidPopover.show();
+                        preventScrollOnValidation();
+
+                    }
+                    else {
+                        await calculateRisk();
+                    }
+
+                }, false)
+            })
+
+            // Baseline risk auto-fill logic
+            const baselineRiskItem = document.getElementById('baseline-risk');
+
+            baselineRiskItem.addEventListener('click', function (event) {
+                handleBaselineRiskClick();
+            });
+            // TODO next line for dev only, remove later
+            handleBaselineRiskClick();
+        });
+
+
         async function calculateRisk() {
             const formData = new FormData(
                 document.getElementById("calculator-form")
             );
 
             const pregnancy = {
-
-            }
+                Fetuses: formData.get("fetuses"),
+                GestAgeWeeks: parseFloat(formData.get("gest-age-weeks")),
+                GestAgeDays: parseFloat(formData.get("gest-age-days")),
+                IVF: formData.get("conception") === "ivf",
+            };
 
             const characteristics = {
                 Age: parseFloat(formData.get("age")),
-                Weight: parseFloat(formData.get("weight")),
                 Height: parseFloat(formData.get("height")),
+                Weight: parseFloat(formData.get("weight")),
                 Ethnicity: formData.get("ethnicity"),
-                FamilyHistoryPE: formData.get("fam-hist-pe") === "yes",
-                IVF: formData.get("conception") === "ivf",
-                ChronicHypert: formData.get("chronic-hypert") === "yes",
-                Diabetes: formData.get("diabetes") === "yes",
-                Autoimmune: formData.get("autoimmune") === "yes",
-                PregnancyInterval: parseFloat(formData.get("preg-interval")) || 0,
-                PrevGestAge: parseFloat(formData.get("prev-gest-age")) || 0,
+                MotherPe: formData.get("mother-pe") === "yes",
             };
 
-            const history = {
-
+            const medHistory = {
+                ChronicHypert: formData.get("chronic-hypert") === "yes",
+                Diabetes: formData.get("diabetes") === "yes",
+                SleOrAps: formData.get("sle-aps") === "yes",
             }
-
-
+            const obsHistory = {
+                Parous: formData.get("parous") === "yes",
+                ParousPe: formData.get("parous-pe-yes") === "yes",
+                ParousGestAgeWeeks: parseFloat(formData.get("parous-gest-age-weeks")),
+                ParousGestAgeDays: parseFloat(formData.get("parous-gest-age-days")),
+                ParousPregInterval: parseFloat(formData.get("parous-preg-interval")),
+            };
 
             const measurements = {
                 MapMoM: parseFloat(formData.get("map")),
                 UtaPiMoM: parseFloat(formData.get("uta-pi")),
                 PlgfMoM: parseFloat(formData.get("plgf")),
+                PappAMoM: parseFloat(formData.get("papp-a")),
             };
 
             try {
@@ -46,8 +195,9 @@
                 const response = await fetch("http://localhost:5128/calculate-risk", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ pregnancy, characteristics, history, measurements }),
+                    body: JSON.stringify({ pregnancy, characteristics, medHistory, obsHistory, measurements }),
                 });
+                console.log("body", { body: response.body });
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -63,10 +213,10 @@
                     oddsPost = oddsPost > 10000 ? 10000 : oddsPost;
                     document.getElementById(
                         "resultPrior"
-                    ).textContent = `Preeclampsia risk from history only at < 37 weeks: 1 in ${Math.round(oddsPrior)}`;
+                    ).textContent = `Pre-eclampsia risk from history only at < 37 weeks: 1 in ${Math.round(oddsPrior)}`;
                     document.getElementById(
                         "resultPost"
-                    ).textContent = `Preeclampsia risk from history plus biomarkers at < 37 weeks: 1 in ${Math.round(oddsPost)}`;
+                    ).textContent = `Pre-eclampsia risk from history plus biomarkers at < 37 weeks: 1 in ${Math.round(oddsPost)}`;
                 } else {
                     document.getElementById(
                         "result"
@@ -82,232 +232,320 @@
     </script>
 }
 
-<div class="container mt-5">
-    <form id="calculator-form" class="needs-validation" novalidate>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between mb-3">
+        <h1 class="fs-3">Calculator</h1>
+
+        <div class="dropdown">
+            <button class="btn btn-info dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Auto-fill
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item disabled" href="#">Low risk</a></li>
+                <li><a class="dropdown-item" id="baseline-risk" href="#">Baseline risk</a></li>
+                <li><a class="dropdown-item disabled" href="#">High risk</a></li>
+            </ul>
+        </div>
+
+
+    </div>
+    <div class="d-flex justify-content-end">
+        <small><span class="text-danger">*</span> indicates a required field</small>
+    </div>
+    <form id="calculator-form" class="row needs-validation" novalidate>
         <!-- PREGNANCY DETAILS -->
-        <div class="border p-3 mb-4">
-            <h5 class="mb-3">Pregnancy details</h5>
+        <fieldset class="border rounded p-3 mb-4">
+            <legend class="mb-3">Pregnancy details</legend>
             <div class="row mb-3">
-                <label for="pregnancyType" class="col-sm-4 col-form-label">Singleton or twins</label>
-                <div class="col-sm-2">
-                    <select id="pregnancyType" name="pregnancyType" class="form-select">
-                        <!-- Options here -->
+                <label for="pregnancyType" class="col-sm-3 col-form-label">Singleton or twins<span
+                        class="text-danger">*</span></label>
+                <div class="col-sm-4">
+                    <select id="fetuses" name="fetuses" class="form-select" required>
+                        <option value="" selected disabled>Select singleton or twins</option>
+                        <option value="singleton">Singleton</option>
+                        <option value="twins">Twins (monochorionic)</option>
+                        <option value="twins">Twins (dichorionic)</option>
                     </select>
                 </div>
             </div>
-
-            <div class="row mb-3">
-                <label for="fetalCrownRumpLength" class="col-sm-4 col-form-label">Fetal crown-rump length</label>
-                <div class="col-sm-2">
+            <fieldset class="row mb-3">
+                <legend class="col-sm-3 col-form-label">Gestational age<span class="text-danger">*</span></legend>
+                <div class="col-sm-6">
                     <div class="input-group">
-
-                        <input type="number" id="fetalCrownRumpLength" name="fetalCrownRumpLength"
-                            class="form-control" />
-                        <span class="input-group-text">mm</span>
+                        <input type="number" id="gest-age-weeks" name="gest-age-weeks" class="form-control" required />
+                        <span class="input-group-text">weeks</span>
+                        <input type="number" id="gest-age-days" name="gest-age-days" class="form-control" required />
+                        <span class="input-group-text">days</span>
+                        <div class="invalid-feedback">
+                            Please provide the gestational age for the current pregnancy.
+                        </div>
                     </div>
                 </div>
-
-            </div>
-            <div class="row mb-3">
-                <p class="col-sm-4">Gestational age</p>
+            </fieldset>
+            <fieldset class="row mb-3">
+                <legend class="col-sm-3 col-form-label">IVF<span class="text-danger">*</span></legend>
                 <div class="col-sm-4">
-                    <p><span>x</span> weeks</p>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="ivf" id="ivfYes" value="yes" required>
+                        <label class="form-check-label" for="ivfYes">Yes</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="ivf" id="ivfNo" value="no" required>
+                        <label class="form-check-label" for="IvfNo">No</label>
+                    </div>
                 </div>
-
-            </div>
-
-        </div>
+            </fieldset>
+        </fieldset>
         <!-- MATERNAL CHARACTERISTICS -->
-        <div class="border p-3 mb-4">
-            <h5 class="mb-3">Maternal characteristics</h5>
+        <fieldset class="border rounded p-3 mb-4">
+            <legend class="mb-3">Maternal characteristics</legend>
             <div class="row mb-3">
-                <label for="dateOfBirth" class="col-sm-4 col-form-label">Date of birth</label>
-                <div class="col-sm-2">
-                    <input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" />
+                <label for="age" class="col-sm-3 col-form-label">Age<span class="text-danger">*</span></label>
+                <div class="col-sm-3">
+                    <div class="input-group">
+                        <input type="number" id="age" name="age" class="form-control" required />
+                        <span class="input-group-text">years</span>
+                        <div class="invalid-feedback">
+                            Please provide maternal age.
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="row mb-3">
-                <label for="height" class="col-sm-4 col-form-label">Height</label>
-                <div class="col-sm-2">
-                    <input type="number" id="height" name="height" class="form-control" placeholder="cm" />
+                <label for="height" class="col-sm-3 col-form-label">Height<span class="text-danger">*</span></label>
+                <div class="col-sm-3">
+                    <div class="input-group">
+                        <input type="number" id="height" name="height" class="form-control" required />
+                        <span class="input-group-text">cm</span>
+                        <div class="invalid-feedback">
+                            Please provide maternal height.
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="row mb-3">
-                <label for="weight" class="col-sm-4 col-form-label">Weight</label>
-                <div class="col-sm-2">
-                    <input type="number" id="weight" name="weight" class="form-control" placeholder="kg" />
+                <label for="weight" class="col-sm-3 col-form-label">Weight<span class="text-danger">*</span></label>
+                <div class="col-sm-3">
+                    <div class="input-group">
+                        <input type="number" id="weight" name="weight" class="form-control" required />
+                        <span class="input-group-text">kg</span>
+                        <div class="invalid-feedback">
+                            Please provide maternal weight.
+                        </div>
+                    </div>
                 </div>
-
             </div>
             <div class="row mb-3">
-                <label for="ethnicity" class="col-sm-4 col-form-label">Ethnicity</label>
-                <div class="col-sm-2">
-                    <select id="ethnicity" name="ethnicity" class="form-select">
-                        <!-- Options here -->
+                <label for="ethnicity" class="col-sm-3 col-form-label">Ethnicity<span
+                        class="text-danger">*</span></label>
+                <div class="col-sm-3">
+                    <select id="ethnicity" name="ethnicity" class="form-select" required>
+                        <option value="" selected disabled>Select ethnicity</option>
+                        <option value="black">Black</option>
+                        <option value="east-asian">South asian</option>
+                        <option value="other">Other ethnicity</option>
                     </select>
                 </div>
             </div>
-            <div class="row mb-3">
-                <label for="smoking" class="col-sm-4 col-form-label">Smoking during pregnancy</label>
-                <div class="col-sm-8">
+            <fieldset class="row mb-3">
+                <legend class="col-sm-3 col-form-label">Mother of the patient had pre-eclampsia<span
+                        class="text-danger">*</span></legend>
+                <div class="col-sm-4">
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="smoking" id="smokingYes" value="yes">
-                        <label class="form-check-label" for="smokingYes">Yes</label>
+                        <input class="form-check-input" type="radio" name="mother-pe" id="mother-pe-yes" value="yes">
+                        <label class="form-check-label" for="mother-pe-yes">Yes</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="smoking" id="smokingNo" value="no" checked>
-                        <label class="form-check-label" for="smokingNo">No</label>
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-3">
-                <label for="famHistPE" class="col-sm-4 col-form-label">Mother of the patient had PE</label>
-                <div class="col-sm-8">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="famHistPE" id="famHistPEYes" value="yes">
-                        <label class="form-check-label" for="famHistPEYes">Yes</label>
+                        <input class="form-check-input" type="radio" name="mother-pe" id="mother-pe-no" value="no">
+                        <label class="form-check-label" for="mother-pe-no">No</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="famHistPE" id="famHistPENo" value="no"
-                            checked>
-                        <label class="form-check-label" for="famHistPENo">No</label>
+                        <input class="form-check-input" type="radio" name="mother-pe" id="mother-pe-unknown" value="no"
+                            data-bs-toggle="popover" data-bs-placement="bottom"
+                            data-bs-content="When it is not known whether the mother had pre-eclampsia, the calculator will assume 'No'.">
+                        <label class="form-check-label" for="mother-pe-unknown">Unknown</label>
                     </div>
                 </div>
-            </div>
-            <div class="row mb-3">
-                <label for="conceptionMethod" class="col-sm-4 col-form-label">Conception method</label>
-                <div class="col-sm-2">
-                    <select id="conceptionMethod" name="conceptionMethod" class="form-select">
-                        <!-- Options here -->
-                    </select>
-                </div>
-            </div>
-        </div>
+            </fieldset>
+        </fieldset>
         <!-- MEDICAL HISTORY -->
-        <div class="border p-3 mb-4">
-            <h5 class="mb-3">Medical history</h5>
-            <div class="row mb-3">
-                <label for="chronicHypert" class="col-sm-6 col-form-label">Chronic hypertension</label>
-                <div class="col-sm-6">
+        <fieldset class="border rounded p-3 mb-4">
+            <legend class="mb-3">Medical history</legend>
+            <fieldset class="row mb-3">
+                <legend class="col-sm-3 col-form-label">Chronic hypertension<span class="text-danger">*</span></legend>
+                <div class="col-sm-4">
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="chronicHypert" id="chronicHypertYes"
+                        <input class="form-check-input" type="radio" name="chronic-hypert" id="chronic-hypert-yes"
                             value="yes">
-                        <label class="form-check-label" for="chronicHypertYes">Yes</label>
+                        <label class="form-check-label" for="chronic-hypert-yes">Yes</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="chronicHypert" id="chronicHypertNo"
-                            value="no" checked>
-                        <label class="form-check-label" for="chronicHypertNo">No</label>
+                        <input class="form-check-input" type="radio" name="chronic-hypert" id="chronic-hypert-no"
+                            value="no">
+                        <label class="form-check-label" for="chronic-hypert-no">No</label>
                     </div>
                 </div>
-            </div>
-            <div class="row mb-3">
-                <label for="diabetes" class="col-sm-6 col-form-label">Diabetes (type I or II)</label>
-                <div class="col-sm-6">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="diabetes" id="diabetesYes" value="yes">
-                        <label class="form-check-label" for="diabetesYes">Yes</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="diabetes" id="diabetesNo" value="no" checked>
-                        <label class="form-check-label" for="diabetesNo">No</label>
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-3">
-                <label for="slea" class="col-sm-6 col-form-label">Systemic lupus erythematosus</label>
-                <div class="col-sm-6">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="slea" id="sleaYes" value="yes">
-                        <label class="form-check-label" for="sleaYes">Yes</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="slea" id="sleaNo" value="no" checked>
-                        <label class="form-check-label" for="sleaNo">No</label>
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-3">
-                <label for="aps" class="col-sm-6 col-form-label">Anti-phospholipid syndrome</label>
-                <div class="col-sm-6">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="aps" id="apsYes" value="yes">
-                        <label class="form-check-label" for="apsYes">Yes</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="aps" id="apsNo" value="no" checked>
-                        <label class="form-check-label" for="apsNo">No</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-<!-- OBSTETRIC HISTORY -->
-        <div class="border p-3 mb-4">
-            <h5 class="mb-3">Obstetric history</h5>
-            <div class="row mb-3">
-                <label for="parity" class="col-sm-6 col-form-label">Nulliparous (no previous pregnancies at ≥24
-                    weeks)</label>
-                <div class="col-sm-6">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="parity" id="parityNulliparous"
-                            value="nulliparous" checked>
-                        <label class="form-check-label" for="parityNulliparous">Nulliparous</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="parity" id="parityParous"
-                            value="parous-no-pe">
-                        <label class="form-check-label" for="parityParous">Parous without previous PE</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="parity" id="parityParousPE"
-                            value="parous-with-pe">
-                        <label class="form-check-label" for="parityParousPE">Parous with previous PE</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-<!-- BIO-MEASUREMENTS -->
-        <div class="border p-3 mb-4">
-            <h5 class="mb-3">Bio-measurements</h5>
-            <div class="row mb-3">
-                <label for="map" class="col-sm-6 col-form-label">Mean arterial pressure (MAP)</label>
+            </fieldset>
+            <fieldset class="row mb-3">
+                <legend class="col-sm-3 col-form-label">Diabetes (type I or II)<span class="text-danger">*</span>
+                </legend>
                 <div class="col-sm-4">
-                    <input type="number" step="0.01" id="map" name="map" class="form-control" />
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="diabetes" id="diabetes-yes" value="yes">
+                        <label class="form-check-label" for="diabetes-yes">Yes</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="diabetes" id="diabetes-no" value="no">
+                        <label class="form-check-label" for="diabetes-no">No</label>
+                    </div>
                 </div>
-                <div class="col-sm-2">
-                    <span class="input-group-text">mmHg</span>
+            </fieldset>
+            <fieldset class="row mb-3">
+                <legend class="col-sm-3 col-form-label">Systemic lupus erythematosus or Anti-phospholipid
+                    syndrome<span class="text-danger">*</span></legend>
+                <div class="col-sm-4">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="sle-aps" id="sle-aps-yes" value="yes">
+                        <label class="form-check-label" for="sle-aps-yes">Yes</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="sle-aps" id="sle-aps-no" value="no">
+                        <label class="form-check-label" for="sle-aps-no">No</label>
+                    </div>
+                </div>
+            </fieldset>
+        </fieldset>
+        <!-- OBSTETRIC HISTORY -->
+        <fieldset class="border rounded rounded p-3 mb-4">
+            <legend class="mb-3">Obstetric history</legend>
+            <fieldset class="row mb-3">
+                <legend class="col-sm-3 col-form-label">Parity<span class="text-danger">*</span></legend>
+                <div class="col-sm-6">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="parous" id="parous-no" value="no">
+                        <label class="form-check-label" for="parous-no">Nulliparous</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="parous" id="parous-yes" value="yes">
+                        <label class="form-check-label" for="parous-yes">Parous</label>
+                    </div>
+                </div>
+            </fieldset>
+            <div class="card card-body collapse" id="parous-collapse">
+                <h6 class="card-title mb-3">Details of last pregnancy at greater than 24 weeks</h5>
+                    <div class="row mb-3">
+                        <legend class="col-sm-3 col-form-label">Pre-eclampsia<span class="text-danger">*</span></legend>
+                        <div class="col-sm-4">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="parous-pe" id="parous-pe-yes"
+                                    value="yes" required>
+                                <label class="form-check-label" for="parous-pe-yes">Yes</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="parous-pe" id="parous-pe-no"
+                                    value="no" required>
+                                <label class="form-check-label" for="parous-pe-no">No</label>
+                            </div>
+                        </div>
+                    </div>
+                    <fieldset class="row mb-3">
+                        <legend class="col-sm-3 col-form-label">Gestation age at delivery<span
+                                class="text-danger">*</span></legend>
+                        <div class="col-sm-6">
+                            <div class="input-group">
+                                <input type="number" id="parous-gest-age-weeks" name="parous-gest-age-weeks"
+                                    class="form-control" />
+                                <span class="input-group-text">weeks</span>
+                                <input type="number" id="parous-gest-age-days" name="parous-gest-age-days"
+                                    class="form-control" />
+                                <span class="input-group-text">days</span>
+                                <div class="invalid-feedback">
+                                    Please provide the gestation age of the last pregnancy.
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                    @* TODO FMF calculator has years to 1 decimal place *@
+                    <fieldset class="row mb-3">
+                        <legend class="col-sm-3 col-form-label">Interval between current and last pregnancy<span
+                                class="text-danger">*</span></legend>
+                        <div class="col-sm-3">
+                            <div class="input-group">
+                                <input type="number" id="parous-preg-interval" name="parous-preg-interval"
+                                    class="form-control" />
+                                <span class="input-group-text">years</span>
+                                <div class="invalid-feedback">
+                                    Please provide the interval between the current and last pregnancy.
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+            </div>
+        </fieldset>
+        <!-- BIO-MEASUREMENTS -->
+        <fieldset class="border rounded p-3 mb-4">
+            <legend class="mb-3">Bio-measurements</legend>
+            @* TODO Calculate MAP from 2 measurements*@
+            <div class="row mb-3">
+                <label for="map" class="col-sm-3 col-form-label">Mean arterial pressure (MAP)</label>
+                <div class="col-sm-3">
+                    <div class="input-group">
+                        <input type="number" step="0.01" id="map" name="map" class="form-control" />
+                        <span class="input-group-text">mmHg</span>
+                    </div>
                 </div>
             </div>
+            @* TODO Calculate UTAPI from left and right readings*@
             <div class="row mb-3">
-                <label for="uta-pi" class="col-sm-6 col-form-label">Mean uterine artery PI</label>
-                <div class="col-sm-4">
+                <label for="uta-pi" class="col-sm-3 col-form-label">Mean uterine artery pulsatility index</label>
+                <div class="col-sm-3">
                     <input type="number" step="0.01" id="uta-pi" name="uta-pi" class="form-control" />
-                </div>
-                <div class="col-sm-2">
-                    <span class="input-group-text">PI</span>
+
                 </div>
             </div>
             <div class="row mb-3">
-                <label for="plgf" class="col-sm-6 col-form-label">Serum PLGF</label>
-                <div class="col-sm-6">
+                <legend class="col-sm-3 col-form-label">Serum measurement</legend>
+                <div class="col-sm-4">
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="plgf" id="plgfNo" value="no" checked>
-                        <label class="form-check-label" for="plgfNo">Not available</label>
+                        <input class="form-check-input" type="radio" name="serum-measure" id="serum-measure-none"
+                            value="none" checked>
+                        <label class="form-check-label" for="serum-measure-papp-a">Not available</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="plgf" id="plgfMoM" value="mom">
-                        <label class="form-check-label" for="plgfMoM">MoM</label>
+                        <input class="form-check-input" type="radio" name="serum-measure" id="serum-measure-plgf"
+                            value="plgf">
+                        <label class="form-check-label" for="serum-measure-plgf">PlGF</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="plgf" id="plgfRaw" value="raw">
-                        <label class="form-check-label" for="plgfRaw">Raw data</label>
+                        <input class="form-check-input" type="radio" name="serum-measure" id="serum-measure-papp-a"
+                            value="papp-a">
+                        <label class="form-check-label" for="serum-measure-papp-a">PAPP-A</label>
                     </div>
+
                 </div>
             </div>
-        </div>
-
+            <fieldset class="row mb-3 collapse show " id="plgf-fieldset">
+                <label for="plgf-measure" class="col-sm-3 col-form-label">Serum PlGF</label>
+                <div class="col-sm-3">
+                    <div class="input-group">
+                        <input type="number" id="plgf-measure" name="plgf-measure" class="form-control" />
+                        <span class="input-group-text">MoM</span>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset class="row mb-3 collapse " id="papp-a-fieldset">
+                <label for="papp-a-measure" class="col-sm-3 col-form-label">Serum PAPP-A</label>
+                <div class="col-sm-3">
+                    <div class="input-group">
+                        <input type="number" id="papp-a-measure" name="papp-a-measure" class="form-control" />
+                        <span class="input-group-text">MoM</span>
+                    </div>
+                </div>
+            </fieldset>
+        </fieldset>
         <div class="text-center">
-            <button type="button" class="btn btn-primary" onclick="calculateRisk()">Calculate Risk</button>
+            <button type="submit" id="submit-button" class="btn btn-primary" data-bs-title="Validation Error"
+                data-bs-content="Please correct the highlighted fields.">Calculate risk</button>
         </div>
     </form>
     <div class="mt-4">
