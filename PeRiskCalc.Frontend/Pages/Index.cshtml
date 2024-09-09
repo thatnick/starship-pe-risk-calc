@@ -6,8 +6,6 @@
 @section scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-
-
             const plgfRadio = document.getElementById('serum-measure-plgf');
             const pappARadio = document.getElementById('serum-measure-papp-a');
             const notAvailableRadio = document.getElementById('serum-measure-none');
@@ -32,9 +30,11 @@
             const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
             const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
             const invalidPopover = new bootstrap.Popover(submitButton, {
-                trigger: 'manual'
+                trigger: 'manual',
             }
             );
+
+            const resultsModal = new bootstrap.Modal('#results-modal')
 
             // Initialize Bootstrap collapse elements
             const plgfCollapse = new bootstrap.Collapse(plgfFieldset, {
@@ -112,7 +112,6 @@
                 event.preventDefault();
 
                 // Auto-fill the form fields with baseline risk values
-
                 document.getElementById('fetuses').value = 'singleton';
                 document.getElementById('age').value = 25;
                 document.getElementById('height').value = 164;
@@ -155,12 +154,17 @@
                     event.preventDefault()
                     event.stopPropagation()
                     if (!form.checkValidity()) {
-                        invalidPopover.show();
+                        if (invalidPopover && invalidPopover.tip === null) {
+                            invalidPopover.show();
+                        }
                         preventScrollOnValidation();
                         form.classList.add('was-validated')
                     }
                     else {
+                        form.classList.remove('was-validated')
+                        invalidPopover.hide();
                         await calculateRisk();
+                        resultsModal.show();
                     }
 
                 }, false)
@@ -235,10 +239,10 @@
                     oddsPost = oddsPost > 10000 ? 10000 : oddsPost;
                     document.getElementById(
                         "resultPrior"
-                    ).textContent = `Pre-eclampsia risk from history only at < 37 weeks: 1 in ${Math.round(oddsPrior)}`;
+                    ).textContent = `${Math.round(oddsPrior)}`;
                     document.getElementById(
                         "resultPost"
-                    ).textContent = `Pre-eclampsia risk from history plus biomarkers at < 37 weeks: 1 in ${Math.round(oddsPost)}`;
+                    ).textContent = `${Math.round(oddsPost)}`;
                 } else {
                     document.getElementById(
                         "result"
@@ -523,7 +527,7 @@
                 <div class="col-sm-3">
                     <div class="input-group">
                         <input type="number" step="0.001" id="uta-pi" name="uta-pi" class="form-control" />
-                              <span class="input-group-text">MoM</span>
+                        <span class="input-group-text">MoM</span>
                     </div>
                 </div>
             </div>
@@ -561,7 +565,8 @@
                 <label for="papp-a-measure" class="col-sm-3 col-form-label">Serum PAPP-A</label>
                 <div class="col-sm-3">
                     <div class="input-group">
-                        <input type="number" step="0.1" id="papp-a-measure" name="papp-a-measure" class="form-control" />
+                        <input type="number" step="0.1" id="papp-a-measure" name="papp-a-measure"
+                            class="form-control" />
                         <span class="input-group-text">MoM</span>
                     </div>
                 </div>
@@ -572,8 +577,22 @@
                 data-bs-content="Please correct the highlighted fields.">Calculate risk</button>
         </div>
     </form>
-    <div class="mt-4">
-        <p id="resultPrior" class="text-center"></p>
-        <p id="resultPost" class="text-center"></p>
+</div>
+<div class="modal" tabindex="-1" id="results-modal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Pre-eclampsia risk</h1>
+            </div>
+            <div class="modal-body">
+                <p>Risk from history only at &lt; 37 weeks:</p>
+                <p>1 in <strong id="resultPrior"></strong></p>
+                <p>Risk from history and provided biomarkers &lt; 37 weeks:</p>
+                <p>1 in <strong id="resultPost"></strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
 </div>
