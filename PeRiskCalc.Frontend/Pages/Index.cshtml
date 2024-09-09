@@ -63,7 +63,6 @@
                     pappACollapse.hide();
                     plgfInput.disabled = true;
                     pappAInput.disabled = true;
-                    console.log("Disabling inputs");
                 } else if (plgfRadio.checked) {
                     // Show PlGF fieldset and hide PAPP-A fieldset
                     plgfCollapse.show();
@@ -127,14 +126,16 @@
                 document.querySelector('input[name="parous"][value="no"]').checked = true;
 
                 // Biomeasurements
-                document.getElementById('map').value = 70;
-                document.getElementById('uta-pi').value = 1.5;
+                document.getElementById('map').value = 0.807;
+                document.getElementById('uta-pi').value = 0.872;
+                document.getElementById('serum-measure-plgf').checked = true;
                 document.getElementById('plgf-measure').value = 1;
 
                 // Gestation details
                 document.getElementById('gest-age-weeks').value = 12;
                 document.getElementById('gest-age-days').value = 0;
                 handleParousRadioChange();
+                handleSerumRadioChange();
             }
 
             // Add event listeners to both radio buttons
@@ -154,10 +155,9 @@
                     event.preventDefault()
                     event.stopPropagation()
                     if (!form.checkValidity()) {
-
                         invalidPopover.show();
                         preventScrollOnValidation();
-
+                        form.classList.add('was-validated')
                     }
                     else {
                         await calculateRisk();
@@ -200,9 +200,9 @@
 
                 Parous: formData.get("parous") === "yes",
                 ParousPe: formData.get("parous-pe-yes") === "yes",
-                ParousGestAgeWeeks: parseFloat(formData.get("parous-gest-age-weeks")),
-                ParousGestAgeDays: parseFloat(formData.get("parous-gest-age-days")),
-                ParousPregInterval: parseFloat(formData.get("parous-preg-interval")),
+                ParousGestAgeWeeks: parseFloat(formData.get("parous-gest-age-weeks")) || 0,
+                ParousGestAgeDays: parseFloat(formData.get("parous-gest-age-days")) || 0,
+                ParousPregInterval: parseFloat(formData.get("parous-preg-interval")) || 0,
             };
 
             const posteriorInputs = {
@@ -512,8 +512,8 @@
                 <label for="map" class="col-sm-3 col-form-label">Mean arterial pressure (MAP)</label>
                 <div class="col-sm-3">
                     <div class="input-group">
-                        <input type="number" step="0.01" id="map" name="map" class="form-control" />
-                        <span class="input-group-text">mmHg</span>
+                        <input type="number" step="0.001" id="map" name="map" class="form-control" />
+                        <span class="input-group-text">MoM</span>
                     </div>
                 </div>
             </div>
@@ -521,8 +521,10 @@
             <div class="row mb-3">
                 <label for="uta-pi" class="col-sm-3 col-form-label">Mean uterine artery pulsatility index</label>
                 <div class="col-sm-3">
-                    <input type="number" step="0.01" id="uta-pi" name="uta-pi" class="form-control" />
-
+                    <div class="input-group">
+                        <input type="number" step="0.001" id="uta-pi" name="uta-pi" class="form-control" />
+                              <span class="input-group-text">MoM</span>
+                    </div>
                 </div>
             </div>
             <div class="row mb-3">
@@ -550,7 +552,7 @@
                 <label for="plgf-measure" class="col-sm-3 col-form-label">Serum PlGF</label>
                 <div class="col-sm-3">
                     <div class="input-group">
-                        <input type="number" id="plgf-measure" name="plgf-measure" class="form-control" />
+                        <input type="number" step="0.1" id="plgf-measure" name="plgf-measure" class="form-control" />
                         <span class="input-group-text">MoM</span>
                     </div>
                 </div>
@@ -559,7 +561,7 @@
                 <label for="papp-a-measure" class="col-sm-3 col-form-label">Serum PAPP-A</label>
                 <div class="col-sm-3">
                     <div class="input-group">
-                        <input type="number" id="papp-a-measure" name="papp-a-measure" class="form-control" />
+                        <input type="number" step="0.1" id="papp-a-measure" name="papp-a-measure" class="form-control" />
                         <span class="input-group-text">MoM</span>
                     </div>
                 </div>
