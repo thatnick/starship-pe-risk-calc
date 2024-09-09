@@ -1,4 +1,6 @@
-﻿public class PriorForm
+﻿using System.Text.Json.Serialization;
+
+public class PriorInputs
 {
     private static readonly int AgeLowerLimit = 12;
     private static readonly int AgeUpperLimit = 55;
@@ -8,9 +10,12 @@
     private static readonly int HeightUpperLimit = 198;
     private static readonly double PregnancyIntervalLowerLimit = 0.25;
     private static readonly double PregnancyIntervalUpperLimit = 15;
-    private static readonly double PrevGestAgeLowerLimit = 24;
-    private static readonly double PrevGestAgeUpperLimit = 42;
+    private static readonly double LastGestAgeLowerLimit = 24;
+    private static readonly double LastGestAgeUpperLimit = 42;
 
+    private Fetuses Fetuses { get; set; }
+    private double GestAge { get; set; }
+    public bool IVF { get; set; }
     private int age;
     public int Age
     {
@@ -22,17 +27,6 @@
 
         }
     }
-    public bool ChronicHypert { get; set; }
-    private int weight;
-    public int Weight
-    {
-        get => weight;
-        set
-        {
-            weight = ChronicHypert ? value : 0;
-        }
-    }
-
     private double height;
     public double Height
     {
@@ -44,140 +38,133 @@
         }
     }
 
-    public required String Ethnicity { get; set; }
-    public bool FamilyHistoryPE { get; set; }
-    public bool IVF { get; set; }
+    private int weight;
+    private double parousInverseOfPregInterval;
+    private double parousInverseSqRootOfPregInterval;
+    private double parousLastGestAgeCalc;
+    private double parousLastGestAge;
+    private double parousPregInterval;
+  
+
+    public int Weight
+    {
+        get => weight;
+        set
+        {
+            weight = ChronicHypert ? value : 0;
+        }
+    }
+
+    [JsonConverter(typeof(EthnicityJsonConverter))]
+    public required Ethnicity Ethnicity { get; set; }
+    public bool MotherPE { get; set; }
+    public bool ChronicHypert { get; set; }
 
     public bool Diabetes { get; set; }
-    public bool Autoimmune { get; set; }
+    public bool SleOrAps { get; set; }
 
-    private double pregnancyInterval;
-    //public double PregnancyInterval
-    //{
-    //    get => pregnancyInterval;
-    //    set => pregnancyInterval = Math.Max(PregnancyIntervalLowerLimit, Math.Min(value, PregnancyIntervalUpperLimit));
-    //}
-    public double PregnancyInterval { get => pregnancyInterval; set => pregnancyInterval = value; }
-    private double prevGestAge;
-    //public double PrevGestAge
-    //{
-    //    get => prevGestAge;
-    //    set => prevGestAge = Math.Max(PrevGestAgeLowerLimit, Math.Min(value, PrevGestAgeUpperLimit));
-    //}
-    public double PrevGestAge { get => prevGestAge; set => prevGestAge = value; }
-    public void LogFormToConsole()
-    {
-        Console.WriteLine("Prior Form Data:");
-        Console.WriteLine($"Age: {Age}");
-        Console.WriteLine($"Weight: {Weight}");
-        Console.WriteLine($"Height: {Height}");
-        Console.WriteLine($"Ethnicity: {Ethnicity}");
-        Console.WriteLine($"FamilyHistoryPE: {FamilyHistoryPE}");
-        Console.WriteLine($"Conception: {IVF}");
-        Console.WriteLine($"ChronicHypert: {ChronicHypert}");
-        Console.WriteLine($"Diabetes: {Diabetes}");
-        Console.WriteLine($"Autoimmune: {Autoimmune}");
-        Console.WriteLine($"PregnancyInterval: {PregnancyInterval}");
-        Console.WriteLine($"PrevGestAge: {PrevGestAge}");
-    }
+    public bool Parous { get; set; }
+    
+    public bool ParousWithPE { get; set; }
+
+    private double ParousLastGestAge { get => parousLastGestAge; set {
+        parousLastGestAge = Math.Max(LastGestAgeLowerLimit, Math.Min(value, LastGestAgeUpperLimit));
+    } }
+
+    private double ParousLastGestAgeCalc { get => parousLastGestAgeCalc; set {
+        parousLastGestAgeCalc = Math.Pow(ParousLastGestAge - 24, 2);
+    }}
+
+    public double ParousPregInterval { get => parousPregInterval; set {
+        parousPregInterval = Math.Max(PregnancyIntervalLowerLimit, Math.Min(value, PregnancyIntervalUpperLimit));
+    } }
+
+    public double ParousInverseOfPregInterval { get => parousInverseOfPregInterval; set {
+        parousInverseOfPregInterval = 1 / value;
+    } }
+    public double ParousInverseSqRootOfPregInterval { get => parousInverseSqRootOfPregInterval; set {
+        parousInverseSqRootOfPregInterval = 1 / Math.Sqrt(value);
+    } }
 }
 
-
-public class MoMValues
+public class PosteriorInputs
 {
     public double MapMoM { get; set; }
     public double UtaPiMoM { get; set; }
     public double PlgfMoM { get; set; }
+    public double PappAMoM { get; set; }
 }
 
 public class PriorCoeffs
 {
+    private double ethnicity;
+
     public double Constant { get; set; } = 54.3637;
+    public double IVF { get; set; } = -1.6327;
     public double Age { get; set; } = -0.206886;
     public double Height { get; set; } = 0.11711;
-    public double Ethnicity { get; set; }
-    public double ChronicHypert { get; set; } = -7.2897;
-    public double Autoimmune { get; set; } = -3.0519;
-    public double IVF { get; set; } = -1.6327;
-    public double ParousWithPE { get; set; }
-    public double ParousWithPEGestAge { get; set; }
-    public double ParousNoPE { get; set; }
-    public double ParousNoPEInterval { get; set; }
-    public double ParousNoPEIntervalSquared { get; set; }
-    public double ParousNoPEGestationalAge { get; set; }
     public double Weight { get; set; }
-    public double FamilyHistoryPE { get; set; }
+    public double Ethnicity { get => ethnicity; set {
+        
+    } }
+    public double MotherPe { get; set; }
+    public double ChronicHypert { get; set; } = -7.2897;
     public double Diabetes { get; set; }
+    public double SleOrAps { get; set; } = -3.0519;
 
-    public void LogCoeffsToConsole()
-    {
-        Console.WriteLine("Prior Coefficients:");
-        Console.WriteLine($"Constant: {Constant}");
-        Console.WriteLine($"Age: {Age}");
-        Console.WriteLine($"Height: {Height}");
-        Console.WriteLine($"Ethnicity: {Ethnicity}");
-        Console.WriteLine($"ChronicHypert: {ChronicHypert}");
-        Console.WriteLine($"Autoimmune: {Autoimmune}");
-        Console.WriteLine($"Conception: {IVF}");
-        Console.WriteLine($"ParousWithPE: {ParousWithPE}");
-        Console.WriteLine($"ParousWithPEGestAge: {ParousWithPEGestAge}");
-        Console.WriteLine($"ParousNoPE: {ParousNoPE}");
-        Console.WriteLine($"ParousNoPEInterval: {ParousNoPEInterval}");
-        Console.WriteLine($"ParousNoPEIntervalSquared: {ParousNoPEIntervalSquared}");
-        Console.WriteLine($"ParousNoPEGestationalAge: {ParousNoPEGestationalAge}");
-        Console.WriteLine($"Weight: {Weight}");
-        Console.WriteLine($"FamilyHistoryPE: {FamilyHistoryPE}");
-        Console.WriteLine($"Diabetes: {Diabetes}");
-    }
+    public double ParousWithPE { get; set; }
+    public double ParousWithPELastGestAge { get; set; }
+    public double ParousNoPE { get; set; }
+    public double ParousNoPEIntercept { get; set; }
+    public double ParousNoPEIntervalOne { get; set; }
+    public double ParousNoPEIntervalTwo { get; set; }
+    public double ParousNoPELastGestAge { get; set; }
 
-    public static PriorCoeffs FromForm(PriorForm priorForm)
+    public static PriorCoeffs FromForm(PriorInputs priorInputs)
     {
         var coeffs = new PriorCoeffs();
 
         // Ethnicity Logic
-        coeffs.Ethnicity = priorForm.Ethnicity switch
+        coeffs.Ethnicity = priorInputs.Ethnicity switch
         {
-            "white" => 0,
-            "black" => -2.6786,
-            _ => -1.129,
+            global::Ethnicity.SouthAsian => -1.129,
+            global::Ethnicity.Black => -2.6786,
+            _ => 0
         };
 
-        //// Parity Logic for "parous-with-pe"
-        //if (priorForm.PregnancyInterval > 0 && priorForm.PrevGestAge > 0)
-        //{
-        //    coeffs.ParousWithPE = priorForm.PregnancyInterval == 1 ? -8.1667 : 0;
-        //    coeffs.ParousWithPEGestAge = priorForm.PregnancyInterval == 1
-        //        ? 0.0271988 * Math.Pow(priorForm.PrevGestAge - 24, 2)
-        //        : 0;
-        //}
+        if (priorInputs.Parous)
+        {
+            if (priorInputs.ParousWithPE) {
+                coeffs.ParousWithPE = -8.1667;
 
-        //// Parity Logic for "parous-no-pe"
-        //if (priorForm.PregnancyInterval > 0)
-        //{
-        //    coeffs.ParousNoPE = priorForm.PregnancyInterval > 1 ? -4.335 : 0;
-        //    coeffs.ParousNoPEInterval = priorForm.PregnancyInterval > 1
-        //        ? -4.1513765 * (priorForm.PregnancyInterval - 1)
-        //        : 0;
-        //    coeffs.ParousNoPEIntervalSquared = priorForm.PregnancyInterval > 1
-        //        ? 9.21473572 * (priorForm.PregnancyInterval - 0.5)
-        //        : 0;
-        //    coeffs.ParousNoPEGestationalAge = priorForm.PregnancyInterval > 1
-        //        ? 0.01549673 * Math.Pow(priorForm.PrevGestAge - 24, 2)
-        //        : 0;
-        //}
+            }
+            
+
+        }
 
         // Weight Logic based on Chronic Hypertension
-        coeffs.Weight = !priorForm.ChronicHypert ? -0.0694096 : 0;
+        coeffs.Weight = !priorInputs.ChronicHypert ? -0.0694096 : 0;
 
         // Family History of PE based on Chronic Hypertension
-        coeffs.FamilyHistoryPE = !priorForm.ChronicHypert ? -1.7154 : 0;
+        coeffs.MotherPe = !priorInputs.ChronicHypert ? -1.7154 : 0;
 
         // Diabetes Logic based on Chronic Hypertension
-        coeffs.Diabetes = !priorForm.ChronicHypert ? -3.3899 : 0;
+        coeffs.Diabetes = !priorInputs.ChronicHypert ? -3.3899 : 0;
 
-        priorForm.LogFormToConsole();
-        coeffs.LogCoeffsToConsole();
         return coeffs;
     }
 }
 
+public enum Fetuses
+{
+    Singleton,
+    TwinMonochorionic,
+    TwinDicorionic
+}
+
+public enum Ethnicity
+{
+    SouthAsian,
+    Black,
+    Other
+}

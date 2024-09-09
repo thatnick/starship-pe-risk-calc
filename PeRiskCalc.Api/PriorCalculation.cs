@@ -2,7 +2,7 @@
 
 public static class PriorCalculator
 {
-    public static double CalcPriorMean(PriorCoeffs coeffs, PriorForm inputs)
+    public static double CalcPriorMean(PriorCoeffs coeffs, PriorInputs inputs)
     {
         double priorMean = coeffs.Constant;
         System.Console.WriteLine("******");
@@ -17,7 +17,7 @@ public static class PriorCalculator
         System.Console.WriteLine($"Prior mean after height: {priorMean}");
         System.Console.WriteLine($"Coeffs height  calc: {coeffs.Height * inputs.Height}");
 
-        priorMean += coeffs.Ethnicity * 0;
+        priorMean += coeffs.Ethnicity;
         System.Console.WriteLine($"Prior mean after ethn: {priorMean}");
         System.Console.WriteLine($"Coeffs ethnicity  calc: {coeffs.Ethnicity * 0}");
 
@@ -25,9 +25,9 @@ public static class PriorCalculator
         System.Console.WriteLine($"Prior mean after ch: {priorMean}");
         System.Console.WriteLine($"Coeffs ChronicHypert  calc: {coeffs.ChronicHypert * 0}");
 
-        priorMean += coeffs.Autoimmune * 0;
+        priorMean += coeffs.SleOrAps * 0;
         System.Console.WriteLine($"Prior mean after autoim: {priorMean}");
-        System.Console.WriteLine($"Coeffs Autoimmune  calc: {coeffs.Autoimmune * 0}");
+        System.Console.WriteLine($"Coeffs Autoimmune  calc: {coeffs.SleOrAps * 0}");
 
         priorMean += coeffs.IVF * 0;
         System.Console.WriteLine($"Prior mean after ivf: {priorMean}");
@@ -37,34 +37,34 @@ public static class PriorCalculator
         System.Console.WriteLine($"Prior mean after parWPe: {priorMean}");
         System.Console.WriteLine($"Coeffs ParousWithPE  calc: {coeffs.ParousWithPE * 0}");
 
-        priorMean += coeffs.ParousWithPEGestAge * 0;
+        priorMean += coeffs.ParousWithPELastGestAge * 0;
         System.Console.WriteLine($"Prior mean after parWithPEGestAge {priorMean}");
-        System.Console.WriteLine($"Coeffs ParousWithPEGestAge  calc: {coeffs.ParousWithPEGestAge * 0}");
+        System.Console.WriteLine($"Coeffs ParousWithPEGestAge  calc: {coeffs.ParousWithPELastGestAge * 0}");
 
-        priorMean += coeffs.ParousNoPE * 0;
-        System.Console.WriteLine($"Prior mean after parous no pe: {priorMean}");
-        System.Console.WriteLine($"Coeffs ParousNoPE  calc: {coeffs.ParousNoPE * 0}");
-
-        priorMean += coeffs.ParousNoPEInterval * 0;
+        priorMean += coeffs.ParousNoPEIntercept * 0;
         System.Console.WriteLine($"Prior mean after parnopeinter: {priorMean}");
-        System.Console.WriteLine($"Coeffs ParousNoPEInterval  calc: {coeffs.ParousNoPEInterval * 0}");
+        System.Console.WriteLine($"Coeffs ParousNoPEInterval  calc: {coeffs.ParousNoPEIntercept * 0}");
 
-        priorMean += coeffs.ParousNoPEIntervalSquared * 0;
+        priorMean += coeffs.ParousNoPEIntervalOne * 0;
         System.Console.WriteLine($"Prior mean after parous peintsquared: {priorMean}");
-        System.Console.WriteLine($"Coeffs ParousNoPEIntervalSquared  calc: {coeffs.ParousNoPEIntervalSquared * 0}");
+        System.Console.WriteLine($"Coeffs ParousNoPEIntervalSquared  calc: {coeffs.ParousNoPEIntervalOne * 0}");
 
-        priorMean += coeffs.ParousNoPEGestationalAge * 0;
+        priorMean += coeffs.ParousNoPEIntervalTwo * 0;
+        System.Console.WriteLine($"Prior mean after parous peintsquared: {priorMean}");
+        System.Console.WriteLine($"Coeffs ParousNoPEIntervalSquared  calc: {coeffs.ParousNoPEIntervalTwo * 0}");
+
+        priorMean += coeffs.ParousNoPELastGestAge * 0;
         System.Console.WriteLine($"Prior mean after parousnopegestage: {priorMean}");
-        System.Console.WriteLine($"Coeffs ParousNoPEGestationalAge  calc: {coeffs.ParousNoPEGestationalAge * 0}");
+        System.Console.WriteLine($"Coeffs ParousNoPEGestationalAge  calc: {coeffs.ParousNoPELastGestAge * 0}");
 
         priorMean += coeffs.Weight * inputs.Weight;
 
         System.Console.WriteLine($"Prior mean after weight: {priorMean}");
         System.Console.WriteLine($"Coeffs Weight  calc: {coeffs.Weight * inputs.Weight}");
 
-        priorMean += coeffs.FamilyHistoryPE * 0;
+        priorMean += coeffs.MotherPe * 0;
         System.Console.WriteLine($"Prior mean after fam hist pe: {priorMean}");
-        System.Console.WriteLine($"Coeffs FamilyHistoryPE  calc: {coeffs.FamilyHistoryPE * 0}");
+        System.Console.WriteLine($"Coeffs FamilyHistoryPE  calc: {coeffs.MotherPe * 0}");
 
         priorMean += coeffs.Diabetes * 0;
         System.Console.WriteLine($"Prior mean after diabetes: {priorMean}");
