@@ -5,6 +5,7 @@
 }
 @section scripts {
     <script>
+        const apiBaseUrl = '@Model.ApiBaseUrl';
         document.addEventListener('DOMContentLoaded', function () {
             const plgfRadio = document.getElementById('serum-measure-plgf');
             const pappARadio = document.getElementById('serum-measure-papp-a');
@@ -283,7 +284,7 @@
 
             try {
 
-                const response = await fetch("http://localhost:5128/calculate-risk", {
+                const response = await fetch(`${apiBaseUrl}/calculate-risk`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ priorInputs, posteriorInputs }),
