@@ -107,6 +107,34 @@
                     parousPeYesRadio.disabled = true;
                 }
             }
+            function handleLowRiskClick() {
+                event.preventDefault();
+
+                // Auto-fill the form fields with low risk values
+                document.getElementById('fetuses').value = 'singleton';
+                document.getElementById('age').value = 25;
+                document.getElementById('height').value = 164;
+                document.getElementById('weight').value = 69;
+                document.getElementById('ethnicity').value = 'other';
+                document.querySelector('input[name="mother-pe"][value="no"]').checked = true;
+                document.querySelector('input[name="ivf"][value="no"]').checked = true;
+                document.querySelector('input[name="chronic-hypert"][value="no"]').checked = true;
+                document.querySelector('input[name="diabetes"][value="no"]').checked = true;
+                document.querySelector('input[name="sle-aps"][value="no"]').checked = true;
+                document.querySelector('input[name="parous"][value="no"]').checked = true;
+
+                // Biomeasurements
+                document.getElementById('map').value = 0.577;
+                document.getElementById('uta-pi').value = 0.582;
+                document.getElementById('serum-measure-plgf').checked = true;
+                document.getElementById('plgf-measure').value = 1;
+
+                // Gestation details
+                document.getElementById('gest-age-weeks').value = 12;
+                document.getElementById('gest-age-days').value = 0;
+                handleParousRadioChange();
+                handleSerumRadioChange();
+            }
 
             function handleBaselineRiskClick() {
                 event.preventDefault();
@@ -137,6 +165,35 @@
                 handleSerumRadioChange();
             }
 
+            function handleHighRiskClick() {
+                event.preventDefault();
+
+                // Auto-fill the form fields with high risk values
+                document.getElementById('fetuses').value = 'singleton';
+                document.getElementById('age').value = 25;
+                document.getElementById('height').value = 164;
+                document.getElementById('weight').value = 69;
+                document.getElementById('ethnicity').value = 'other';
+                document.querySelector('input[name="mother-pe"][value="no"]').checked = true;
+                document.querySelector('input[name="ivf"][value="no"]').checked = true;
+                document.querySelector('input[name="chronic-hypert"][value="no"]').checked = true;
+                document.querySelector('input[name="diabetes"][value="no"]').checked = true;
+                document.querySelector('input[name="sle-aps"][value="no"]').checked = true;
+                document.querySelector('input[name="parous"][value="no"]').checked = true;
+
+                // Biomeasurements
+                document.getElementById('map').value = 1.038;
+                document.getElementById('uta-pi').value = 1.163;
+                document.getElementById('serum-measure-plgf').checked = true;
+                document.getElementById('plgf-measure').value = 0.5;
+
+                // Gestation details
+                document.getElementById('gest-age-weeks').value = 12;
+                document.getElementById('gest-age-days').value = 0;
+                handleParousRadioChange();
+                handleSerumRadioChange();
+            }
+
             // Add event listeners to both radio buttons
             plgfRadio.addEventListener('change', handleSerumRadioChange);
             pappARadio.addEventListener('change', handleSerumRadioChange);
@@ -145,7 +202,8 @@
             parousYesRadio.addEventListener('change', handleParousRadioChange);
 
             // Initialize the correct visibility on page load
-            handleSerumRadioChange();
+            // TODO implement serum PAPP-A
+            //handleSerumRadioChange(); 
             handleParousRadioChange();
 
             // Loop over them and prevent submission
@@ -171,13 +229,20 @@
             })
 
             // Baseline risk auto-fill logic
-            const baselineRiskItem = document.getElementById('baseline-risk');
 
+            const lowRiskItem = document.getElementById('low-risk');
+            const baselineRiskItem = document.getElementById('baseline-risk');
+            const highRiskItem = document.getElementById('high-risk');
+
+            lowRiskItem.addEventListener('click', function (event) {
+                handleLowRiskClick();
+            });
             baselineRiskItem.addEventListener('click', function (event) {
                 handleBaselineRiskClick();
             });
-            // TODO next line for dev only, remove later
-            handleBaselineRiskClick();
+            highRiskItem.addEventListener('click', function (event) {
+                handleHighRiskClick();
+            });
         });
 
 
@@ -190,7 +255,7 @@
                 Fetuses: formData.get("fetuses"),
                 GestAgeWeeks: parseFloat(formData.get("gest-age-weeks")),
                 GestAgeDays: parseFloat(formData.get("gest-age-days")),
-                IVF: formData.get("conception") === "ivf",
+                IVF: formData.get("ivf") === "yes",
 
                 Age: parseFloat(formData.get("age")),
                 Height: parseFloat(formData.get("height")),
@@ -260,9 +325,9 @@
 
 <div class="container mt-4">
     <div class="alert alert-danger" role="alert">
-   
-  Pre-release version: This calculator is for software testing purposes only.
-</div>
+
+        Pre-release version: This calculator is for software testing purposes only.
+    </div>
     <div class="d-flex justify-content-between mb-3">
         <h1 class="fs-3">Calculator</h1>
 
@@ -271,9 +336,9 @@
                 Auto-fill
             </button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item disabled" href="#">Low risk</a></li>
+                <li><a class="dropdown-item" id="low-risk" href="#">Low risk</a></li>
                 <li><a class="dropdown-item" id="baseline-risk" href="#">Baseline risk</a></li>
-                <li><a class="dropdown-item disabled" href="#">High risk</a></li>
+                <li><a class="dropdown-item" id="high-risk" href="#">High risk</a></li>
             </ul>
         </div>
 
@@ -286,15 +351,15 @@
         <!-- PREGNANCY DETAILS -->
         <fieldset class="border rounded p-3 mb-4">
             <legend class="mb-3">Pregnancy details</legend>
-            <div class="row mb-3">
+            <div class="row mb-3" style="display: none;">
                 <label for="pregnancyType" class="col-sm-3 col-form-label">Singleton or twins<span
                         class="text-danger">*</span></label>
                 <div class="col-sm-4">
                     <select id="fetuses" name="fetuses" class="form-select" required>
                         <option value="" selected disabled>Select singleton or twins</option>
                         <option value="singleton">Singleton</option>
-                        <option value="twins">Twins (monochorionic)</option>
-                        <option value="twins">Twins (dichorionic)</option>
+                        <option value="twins-mono">Twins (monochorionic)</option>
+                        <option value="twins-di">Twins (dichorionic)</option>
                     </select>
                 </div>
             </div>
@@ -380,7 +445,7 @@
             <fieldset class="row mb-3">
                 <legend class="col-sm-3 col-form-label">Mother of the patient had pre-eclampsia<span
                         class="text-danger">*</span></legend>
-                <div class="col-sm-4">
+                <div class="col-sm-6">
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="mother-pe" id="mother-pe-yes" value="yes">
                         <label class="form-check-label" for="mother-pe-yes">Yes</label>
@@ -535,9 +600,9 @@
                     </div>
                 </div>
             </div>
-            <div class="row mb-3">
+            <div class="row mb-3" style="display: none;">
                 <legend class="col-sm-3 col-form-label">Serum measurement</legend>
-                <div class="col-sm-4">
+                <div class="col-sm-6">
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="serum-measure" id="serum-measure-none"
                             value="none" checked>
@@ -556,7 +621,7 @@
 
                 </div>
             </div>
-            <fieldset class="row mb-3 collapse" id="plgf-fieldset">
+            <fieldset class="row mb-3 collapse show" id="plgf-fieldset">
                 <label for="plgf-measure" class="col-sm-3 col-form-label">Serum PlGF</label>
                 <div class="col-sm-3">
                     <div class="input-group">
@@ -565,7 +630,7 @@
                     </div>
                 </div>
             </fieldset>
-            <fieldset class="row mb-3 collapse " id="papp-a-fieldset">
+            <fieldset class="row mb-3 collapse " id="papp-a-fieldset" >
                 <label for="papp-a-measure" class="col-sm-3 col-form-label">Serum PAPP-A</label>
                 <div class="col-sm-3">
                     <div class="input-group">
