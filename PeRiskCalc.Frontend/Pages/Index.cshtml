@@ -84,8 +84,9 @@
                     parousCollapse.show();
                     parousGestAgeWeeksInput.required = true;
                     parousGestAgeWeeksInput.disabled = false;
-                    parousGestAgeDaysInput.required = true;
-                    parousGestAgeDaysInput.disabled = false;
+                    // TODO implement gest age days
+                    //parousGestAgeDaysInput.required = true;
+                    //parousGestAgeDaysInput.disabled = false;
                     parousPregIntervalInput.required = true;
                     parousPregIntervalInput.disabled = false;
                     parousPeNoRadio.required = true;
@@ -98,8 +99,9 @@
                     parousCollapse.hide();
                     parousGestAgeWeeksInput.required = false;
                     parousGestAgeWeeksInput.disabled = true;
-                    parousGestAgeDaysInput.required = false;
-                    parousGestAgeDaysInput.disabled = true;
+                    // TODO implement gest age days
+                    @* parousGestAgeDaysInput.required = false;
+                    parousGestAgeDaysInput.disabled = true; *@
                     parousPregIntervalInput.required = false;
                     parousPregIntervalInput.disabled = true;
                     parousPeNoRadio.required = false;
@@ -370,7 +372,7 @@
                     <div class="input-group">
                         <input type="number" id="gest-age-weeks" name="gest-age-weeks" class="form-control" required />
                         <span class="input-group-text">weeks</span>
-                        <input type="number" id="gest-age-days" name="gest-age-days" class="form-control" required />
+                        <input type="number" id="gest-age-days" name="gest-age-days" class="form-control"  disabled />
                         <span class="input-group-text">days</span>
                         <div class="invalid-feedback">
                             Please provide the gestational age for the current pregnancy.
@@ -553,7 +555,7 @@
                                     class="form-control" />
                                 <span class="input-group-text">weeks</span>
                                 <input type="number" id="parous-gest-age-days" name="parous-gest-age-days"
-                                    class="form-control" />
+                                    class="form-control" disabled />
                                 <span class="input-group-text">days</span>
                                 <div class="invalid-feedback">
                                     Please provide the gestation age of the last pregnancy.
