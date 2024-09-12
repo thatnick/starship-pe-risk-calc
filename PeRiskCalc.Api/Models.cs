@@ -51,7 +51,7 @@ public class PriorInputs
         set
         {
             value = Math.Max(WeightLowerLimit, Math.Min(value, WeightUpperLimit));
-            weight = ChronicHypert ? value : 0;
+            weight = value - 69;
         }
     }
 
