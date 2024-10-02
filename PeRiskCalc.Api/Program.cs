@@ -3,7 +3,6 @@ using static PeRiskCalc.Api.PriorCalculator;
 using Microsoft.AspNetCore.Mvc;
 using PeRiskCalc.Api;
 
-const double currentGestAge = 12;
 const double TARGET_GEST_AGE = 37;
 const double PRIOR_SD_SINGLETON = 6.8833;
 const double PRIOR_SD_TWINS = 4.6019;
@@ -55,7 +54,7 @@ app.MapPost("/calculate-risk", ([FromBody] RiskCalculationRequest request) =>
         plgfAvailable = false;
     }
 
-    var (riskPrior, riskPost) = Calculate(gestAge: Math.Max(currentGestAge, 24), targetGestAge: TARGET_GEST_AGE, priorMean, priorSD: request.PriorInputs.Fetuses == Fetuses.Singleton ? PRIOR_SD_SINGLETON : PRIOR_SD_TWINS, momVector, sigma, mapAvailable, utaPiAvailable, plgfAvailable);
+    var (riskPrior, riskPost) = Calculate(gestAge: Math.Max(request.PriorInputs.GestAgeWeeks, 24), targetGestAge: TARGET_GEST_AGE, priorMean, priorSD: request.PriorInputs.Fetuses == Fetuses.Singleton ? PRIOR_SD_SINGLETON : PRIOR_SD_TWINS, momVector, sigma, mapAvailable, utaPiAvailable, plgfAvailable);
     return Results.Ok(new { riskPrior, riskPost });
 });
 

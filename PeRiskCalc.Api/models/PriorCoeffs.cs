@@ -17,8 +17,8 @@ public class PriorCoeffs
     public double ParousWithPE { get; set; } = -8.1667;
     public double ParousWithPELastGestAge { get; set; } = 0.0271988;
     public double ParousNoPEIntercept { get; set; } = -4.335;
-    public double ParousNoPeInverseOfPregInterval { get; set; } = -4.1513765;
-    public double ParousNoPeInverseSqRootOfPregInterval { get; set; } = 9.21473572;
+    public double ParousPregIntervalToPowCalc1 { get; set; } = -4.1513765;
+    public double ParousPregIntervalToPowCalc2 { get; set; } = 9.21473572;
     public double ParousNoPELastGestAge { get; set; } = 0.01549673;
 
     // change coeffs from their default based on inputs
@@ -52,8 +52,8 @@ public class PriorCoeffs
             if (priorInputs.ParousWithPE)
             {
                 coeffs.ParousNoPEIntercept = 0;
-                coeffs.ParousNoPeInverseOfPregInterval = 0;
-                coeffs.ParousNoPeInverseSqRootOfPregInterval = 0;
+                coeffs.ParousPregIntervalToPowCalc1 = 0;
+                coeffs.ParousPregIntervalToPowCalc2 = 0;
                 coeffs.ParousNoPELastGestAge = 0;
             }
             else
@@ -64,12 +64,13 @@ public class PriorCoeffs
         }
         else
         {
+            coeffs.ParousNoPEIntercept = 0;
+            coeffs.ParousPregIntervalToPowCalc1 = 0;
+            coeffs.ParousPregIntervalToPowCalc2 = 0;
+            coeffs.ParousNoPELastGestAge = 0;
+
             coeffs.ParousWithPE = 0;
             coeffs.ParousWithPELastGestAge = 0;
-            coeffs.ParousNoPEIntercept = 0;
-            coeffs.ParousNoPeInverseOfPregInterval = 0;
-            coeffs.ParousNoPeInverseSqRootOfPregInterval = 0;
-            coeffs.ParousNoPELastGestAge = 0;
         }
 
         // sle and aps

@@ -17,10 +17,7 @@ public class PriorInputs
     private static readonly double LastGestAgeUpperLimit = 42;
 
     // declare / initialise inputs, applying truncation when necessary
-    private double parousInverseOfPregInterval;
-    private double parousInverseSqRootOfPregInterval;
-    private double parousLastGestAgeCalc;
-    private double parousLastGestAge;
+    private double parousLastGestAgeWeeks;
     private double parousPregInterval;
     private int weight;
     private int age;
@@ -28,6 +25,8 @@ public class PriorInputs
 
     [JsonConverter(typeof(FetusesJsonConverter))]
     public Fetuses Fetuses { get; set; }
+
+    public double GestAgeWeeks { get; set; }
 
     public bool IVF { get; set; }
 
@@ -74,15 +73,7 @@ public class PriorInputs
 
     public bool Parous { get; set; }
 
-    private double ParousLastGestAge
-    {
-        get => parousLastGestAge; set
-        {
-            parousLastGestAge = Math.Max(LastGestAgeLowerLimit, Math.Min(value, LastGestAgeUpperLimit));
-        }
-    }
-
-    private double ParousPregInterval
+    public double ParousPregInterval
     {
         get => parousPregInterval; set
         {
@@ -90,29 +81,19 @@ public class PriorInputs
         }
     }
 
-    public double ParousLastGestAgeCalc
+    public double ParousLastGestAgeWeeks
     {
-        get => parousLastGestAgeCalc; set
+        get => parousLastGestAgeWeeks;
+        set
         {
-            parousLastGestAgeCalc = Math.Pow(ParousLastGestAge - 24, 2);
+            value = Math.Max(LastGestAgeLowerLimit, Math.Min(value, LastGestAgeUpperLimit));
+            parousLastGestAgeWeeks = Math.Pow(value - 24, 2);
         }
     }
 
     public bool ParousWithPE { get; set; }
 
-    public double ParousNoPeInverseOfPregInterval
-    {
-        get => parousInverseOfPregInterval; set
-        {
-            parousInverseOfPregInterval = 1 / value;
-        }
-    }
+    public double ParousPregIntervalToPowCalc1 => Math.Pow(ParousPregInterval, -1);
 
-    public double ParousNoPeInverseSqRootOfPregInterval
-    {
-        get => parousInverseSqRootOfPregInterval; set
-        {
-            parousInverseSqRootOfPregInterval = 1 / Math.Sqrt(value);
-        }
-    }
+    public double ParousPregIntervalToPowCalc2 => Math.Pow(ParousPregInterval, -0.5);
 }
