@@ -46,6 +46,7 @@ public static class PriorCalculator
         // Console.WriteLine($"Coeffs diabetes calc: {coeffs.Diabetes}");
 
         Console.WriteLine($"Prior mean before parity: {priorMean}");
+        Console.WriteLine($"ParousWithPE: {inputs.ParousWithPE}");
 
         priorMean += coeffs.ParousWithPE;
         Console.WriteLine($"Prior mean after ParousWithPE: {priorMean}");
@@ -57,26 +58,26 @@ public static class PriorCalculator
         Console.WriteLine($"Coeffs ParousWithPELastGestAge calc: {coeffs.ParousWithPELastGestAge * inputs.ParousLastGestAgeWeeks}");
 
         priorMean += coeffs.ParousNoPEIntercept;
-        Console.WriteLine($"Prior mean after parnopeinter: {priorMean}");
-        Console.WriteLine($"Coeffs ParousNoPEInterval calc: {coeffs.ParousNoPEIntercept}");
+        // Console.WriteLine($"Prior mean after parnopeinter: {priorMean}");
+        // Console.WriteLine($"Coeffs ParousNoPEInterval calc: {coeffs.ParousNoPEIntercept}");
 
-        Console.WriteLine($"ParousPregInterval: {inputs.ParousPregInterval}");
+        // Console.WriteLine($"ParousPregInterval: {inputs.ParousPregInterval}");
 
         priorMean += coeffs.ParousPregIntervalToPowCalc1 * inputs.ParousPregIntervalToPowCalc1;
-        Console.WriteLine($"Prior mean after ParousNoPeInverseOfPregInterval: {priorMean}");
-        Console.WriteLine($"Input ParousPregIntervalToPowCalc1 {inputs.ParousPregIntervalToPowCalc1}");
-        Console.WriteLine($"Coeff ParousPregIntervalToPowCalc1 {coeffs.ParousPregIntervalToPowCalc1}");
-        Console.WriteLine($"Coeffs ParousPregIntervalToPowCalc1 calc: {coeffs.ParousPregIntervalToPowCalc1 * inputs.ParousPregIntervalToPowCalc1}");
+        // Console.WriteLine($"Prior mean after ParousNoPeInverseOfPregInterval: {priorMean}");
+        // Console.WriteLine($"Input ParousPregIntervalToPowCalc1 {inputs.ParousPregIntervalToPowCalc1}");
+        // Console.WriteLine($"Coeff ParousPregIntervalToPowCalc1 {coeffs.ParousPregIntervalToPowCalc1}");
+        // Console.WriteLine($"Coeffs ParousPregIntervalToPowCalc1 calc: {coeffs.ParousPregIntervalToPowCalc1 * inputs.ParousPregIntervalToPowCalc1}");
 
         priorMean += coeffs.ParousPregIntervalToPowCalc2 * inputs.ParousPregIntervalToPowCalc2;
-        Console.WriteLine($"Prior mean after parous ParousNoPeInverseSqRootOfPregInterval: {priorMean}");
-        Console.WriteLine($"Input ParousPregIntervalToPowCalc2 {inputs.ParousPregIntervalToPowCalc2}");
-        Console.WriteLine($"Coeff ParousPregIntervalToPowCalc2 {coeffs.ParousPregIntervalToPowCalc2}");
-        Console.WriteLine($"Coeffs ParousPregIntervalToPowCalc2 calc: {coeffs.ParousPregIntervalToPowCalc2 * inputs.ParousPregIntervalToPowCalc2}");
+        // Console.WriteLine($"Prior mean after parous ParousNoPeInverseSqRootOfPregInterval: {priorMean}");
+        // Console.WriteLine($"Input ParousPregIntervalToPowCalc2 {inputs.ParousPregIntervalToPowCalc2}");
+        // Console.WriteLine($"Coeff ParousPregIntervalToPowCalc2 {coeffs.ParousPregIntervalToPowCalc2}");
+        // Console.WriteLine($"Coeffs ParousPregIntervalToPowCalc2 calc: {coeffs.ParousPregIntervalToPowCalc2 * inputs.ParousPregIntervalToPowCalc2}");
 
         priorMean += coeffs.ParousNoPELastGestAge * inputs.ParousLastGestAgeWeeks;
-        Console.WriteLine($"Prior mean after ParousNoPELastGestAge: {priorMean}");
-        Console.WriteLine($"Coeffs ParousNoPELastGestAge calc: {coeffs.ParousNoPELastGestAge * inputs.ParousLastGestAgeWeeks}");
+        // Console.WriteLine($"Prior mean after ParousNoPELastGestAge: {priorMean}");
+        // Console.WriteLine($"Coeffs ParousNoPELastGestAge calc: {coeffs.ParousNoPELastGestAge * inputs.ParousLastGestAgeWeeks}");
 
         priorMean -= coeffs.TwinFactor;
         // Console.WriteLine($"Prior mean after fetuses: {priorMean}");
