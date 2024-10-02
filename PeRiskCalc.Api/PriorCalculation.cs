@@ -67,7 +67,7 @@
         System.Console.WriteLine($"Prior mean after diabetes: {priorMean}");
         System.Console.WriteLine($"Coeffs diabetes calc: {coeffs.Diabetes}");
 
-        priorMean += coeffs.TwinFactor;
+        priorMean -= coeffs.TwinFactor;
         System.Console.WriteLine($"Prior mean after fetuses: {priorMean}");
         System.Console.WriteLine($"Coeffs fetuses calc: {coeffs.TwinFactor}");
 
