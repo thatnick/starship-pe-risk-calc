@@ -16,6 +16,6 @@ public class IndexModel : PageModel
     public void OnGet()
     {
         // Retrieve the API base URL from configuration
-        ApiBaseUrl = _configuration["ApiBaseUrl"];
+        ApiBaseUrl = _configuration["ApiBaseUrl"]!;
     }
 }

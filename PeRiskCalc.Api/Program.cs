@@ -23,8 +23,8 @@ app.MapPost("/calculate-risk", ([FromBody] RiskCalculationRequest request) =>
 
     double priorMean = CalcPriorMean(priorCoeffs, request.PriorInputs);
     // Define the truncation limits for the log10 MoM values for each marker
-    double[] lowerLimits = { -0.1224076, -0.4216152, -0.5655099 }; // Example limits for MAP, UtA-PI, and PLGF respectively
-    double[] upperLimits = { 0.12240759, 0.42161519, 0.56550992 }; // Example limits for MAP, UtA-PI, and PLGF respectively
+    double[] lowerLimits = { -0.1224076, -0.4216152, -0.5655099 }; // MAP, UtA-PI, and PLGF respectively
+    double[] upperLimits = { 0.12240759, 0.42161519, 0.56550992 }; // MAP, UtA-PI, and PLGF respectively
 
     double[,] sigma =
     {
@@ -55,7 +55,7 @@ app.MapPost("/calculate-risk", ([FromBody] RiskCalculationRequest request) =>
         plgfAvailable = false;
     }
 
-    var (riskPrior, riskPost) = Calculate(gestAge: Math.Max(currentGestAge, 24), targetGestAge: TARGET_GEST_AGE, priorMean, priorSD: request.PriorInputs.Fetuses == global::Fetuses.Singleton ? PRIOR_SD_SINGLETON : PRIOR_SD_TWINS, momVector, sigma, mapAvailable, utaPiAvailable, plgfAvailable);
+    var (riskPrior, riskPost) = Calculate(gestAge: Math.Max(currentGestAge, 24), targetGestAge: TARGET_GEST_AGE, priorMean, priorSD: request.PriorInputs.Fetuses == Fetuses.Singleton ? PRIOR_SD_SINGLETON : PRIOR_SD_TWINS, momVector, sigma, mapAvailable, utaPiAvailable, plgfAvailable);
     return Results.Ok(new { riskPrior, riskPost });
 });
 

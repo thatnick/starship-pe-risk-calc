@@ -7,7 +7,7 @@ public class FetusesJsonConverter : JsonConverter<Fetuses>
 {
     public override Fetuses Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        var value = reader.GetString();
+        var value = reader.GetString()!;
         return value.ToLower() switch
         {
             "singleton" => Fetuses.Singleton,
