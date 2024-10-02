@@ -3,6 +3,8 @@ using Accord.Statistics.Distributions.Univariate;
 using Accord.Statistics.Distributions.Multivariate;
 using Accord.Math;
 
+namespace PeRiskCalc.Api;
+
 public static class RiskCalculator
 {
     public static (double, double) Calculate(
@@ -14,9 +16,9 @@ public static class RiskCalculator
         double[,] sigma,
         bool isMapAvailable, bool isUtaPiAvailable, bool isPlgfAvailable)
     {
-        System.Console.WriteLine("******");
-        System.Console.WriteLine("st dev is " + priorSD);
-        System.Console.WriteLine("******");
+        Console.WriteLine("******");
+        Console.WriteLine("st dev is " + priorSD);
+        Console.WriteLine("******");
 
         // Adjust the MoM vector and sigma matrix based on availability
         var (adjustedMoMs, adjustedSigma) = AdjustForMissingMarkers(momVector, sigma, isMapAvailable, isUtaPiAvailable, isPlgfAvailable);
@@ -86,11 +88,11 @@ public static class RiskCalculator
     private static double[] CalculateMeanVector(double gestationalAge, bool isMapAvailable, bool isUtaPiAvailable, bool isPlgfAvailable)
     {
         var markerCoefficients = new List<Tuple<double, double>>
-    {
-        Tuple.Create(0.088997, -0.0016711), // MAP at 12 weeks
-        Tuple.Create(0.5861, -0.014233),    // UtA-PI at 12 weeks
-        Tuple.Create(-0.92352, 0.021584)    // PLGF at 12 weeks
-    };
+{
+    Tuple.Create(0.088997, -0.0016711), // MAP at 12 weeks
+    Tuple.Create(0.5861, -0.014233),    // UtA-PI at 12 weeks
+    Tuple.Create(-0.92352, 0.021584)    // PLGF at 12 weeks
+};
 
         var availableCoefficients = new List<Tuple<double, double>>();
         if (isMapAvailable) availableCoefficients.Add(markerCoefficients[0]);

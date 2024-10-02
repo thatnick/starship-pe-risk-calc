@@ -1,5 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
+namespace PeRiskCalc.Api;
+
 public class PriorInputs
 {
     private static readonly int AgeLowerLimit = 12;
@@ -24,7 +26,7 @@ public class PriorInputs
         set
         {
             value = Math.Max(AgeLowerLimit, Math.Min(value, AgeUpperLimit));
-            age = value > 35 ? value - 35 : 0; 
+            age = value > 35 ? value - 35 : 0;
         }
     }
     private double height;

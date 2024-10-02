@@ -1,7 +1,7 @@
-using static RiskCalculator;
-using static PriorCalculator;
+using static PeRiskCalc.Api.RiskCalculator;
+using static PeRiskCalc.Api.PriorCalculator;
 using Microsoft.AspNetCore.Mvc;
-using Accord.Math;
+using PeRiskCalc.Api;
 
 const double currentGestAge = 12;
 const double TARGET_GEST_AGE = 37;

@@ -1,6 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
+namespace PeRiskCalc.Api;
+
 public class EthnicityJsonConverter : JsonConverter<Ethnicity>
 {
     public override Ethnicity Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
