@@ -84,9 +84,6 @@
                     parousCollapse.show();
                     parousGestAgeWeeksInput.required = true;
                     parousGestAgeWeeksInput.disabled = false;
-                    // TODO implement gest age days
-                    //parousGestAgeDaysInput.required = true;
-                    //parousGestAgeDaysInput.disabled = false;
                     parousPregIntervalInput.required = true;
                     parousPregIntervalInput.disabled = false;
                     parousPeNoRadio.required = true;
@@ -99,9 +96,6 @@
                     parousCollapse.hide();
                     parousGestAgeWeeksInput.required = false;
                     parousGestAgeWeeksInput.disabled = true;
-                    // TODO implement gest age days
-                    @* parousGestAgeDaysInput.required = false;
-                    parousGestAgeDaysInput.disabled = true; *@
                     parousPregIntervalInput.required = false;
                     parousPregIntervalInput.disabled = true;
                     parousPeNoRadio.required = false;
@@ -205,8 +199,6 @@
             parousYesRadio.addEventListener('change', handleParousRadioChange);
 
             // Initialize the correct visibility on page load
-            // TODO implement serum PAPP-A
-            //handleSerumRadioChange(); 
             handleParousRadioChange();
 
             // Loop over them and prevent submission
@@ -232,7 +224,6 @@
             })
 
             // Baseline risk auto-fill logic
-
             const lowRiskItem = document.getElementById('low-risk');
             const baselineRiskItem = document.getElementById('baseline-risk');
             const highRiskItem = document.getElementById('high-risk');
@@ -291,14 +282,12 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ priorInputs, posteriorInputs }),
                 });
-                console.log("body", { priorInputs, posteriorInputs });
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
                 const result = await response.json();
-
 
                 if (result.riskPrior !== undefined && result.riskPost !== undefined) {
                     let oddsPrior = 1 / result.riskPrior;

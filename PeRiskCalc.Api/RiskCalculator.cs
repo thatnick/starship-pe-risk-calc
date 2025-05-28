@@ -16,10 +16,6 @@ public static class RiskCalculator
         double[,] sigma,
         bool isMapAvailable, bool isUtaPiAvailable, bool isPlgfAvailable)
     {
-        Console.WriteLine("******");
-        Console.WriteLine("st dev is " + priorSD);
-        Console.WriteLine("******");
-
         // Adjust the MoM vector and sigma matrix based on availability
         var (adjustedMoMs, adjustedSigma) = AdjustForMissingMarkers(momVector, sigma, isMapAvailable, isUtaPiAvailable, isPlgfAvailable);
 
